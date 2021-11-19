@@ -95,9 +95,6 @@ public class AVLTree {
 			return -1;
 		}
 
-
-		int rotations = 0;
-
 		// Perform normal BST insertion
 		IAVLNode ptr = this.root;
 
