@@ -197,32 +197,32 @@ public class AVLTree {
 			switch (delCase) {
 				case 1:
 					node.setHeight(node.getHeight() - 1);
-					return RebalanceDel(node.getParent(),rot);
+					return RebalanceDel(node.getParent(),rot+1);
 				case 2:
 					node.setHeight(node.getHeight()-1);
 					node.getRight().setHeight(node.getRight().getHeight()+1);
 					Rotate(node,node.getRight(),LEFT);
-					return rot+1;
+					return rot+3;
 				case 3:
 					node.setHeight(node.getHeight()-2);
 					Rotate(node,node.getRight(),LEFT);
-					return RebalanceDel(node.getParent(),rot+1);
+					return RebalanceDel(node.getParent(),rot+2);
 				case 4:
 					node.setHeight(node.getHeight()-2);
 					node.getRight().setHeight(node.getRight().getHeight()-1);
 					node.getRight().getLeft().setHeight(node.getRight().getLeft().getHeight()+1);
 					Rotate(node.getRight(),node.getRight().getLeft(),RIGHT);
 					Rotate(node.getRight(),node.getRight().getLeft(),RIGHT);//DONT KNOWWWWW
-					return RebalanceDel(node.getParent(),rot+2);
+					return RebalanceDel(node.getParent(),rot+5);
 				case 5:
 					node.setHeight(node.getHeight()-1);
 					node.getLeft().setHeight(node.getLeft().getHeight()+1);
 					Rotate(node,node.getLeft(),LEFT);
-					return 1;
+					return 3;
 				case 6:
 					node.setHeight(node.getHeight()-2);
 					Rotate(node,node.getLeft(),LEFT);
-					return RebalanceDel(node.getParent(),rot+1);
+					return RebalanceDel(node.getParent(),rot+2);
 				case 7:
 					// code block
 					break;
