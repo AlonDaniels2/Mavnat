@@ -677,7 +677,7 @@ public class AVLTree {
 
 		IAVLNode splitNode=FindNode(x);
 		while(splitNode.getParent()!=root){
-
+//
 		}
 
 
