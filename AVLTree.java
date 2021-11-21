@@ -15,239 +15,22 @@ public class AVLTree {
 	private final static int LEAF_NODE = 1;
 	private final static int UNARY_NODE = 2;
 	private final static int INTERNAL_NODE = 3;
-	private final AVLNode VIRTUAL=new AVLNode(-1, null, false);
-	private final static String LEFT="0";
-	private final static String RIGHT="1";
+	private final static int LEFT=1;
+	private final static int RIGHT=2;
 
 
-	AVLNode root;
+	IAVLNode root;
 	private int size = 0;
 
+
+	/**
+	 * public AVLTree()
+	 *
+	 * Constructor of empty AVL tree
+	 *
+	 */
 	public AVLTree() {
 		this.root = null;
-	}
-
-	/**
-	 * public int typeOfNode(IAVLNode)
-	 *
-	 * Returns 0 if the node is a virtual node
-	 * 		   1 if the node is a leaf
-	 * 		   2 if the node is an unary node
-	 * 		   3- else (the node is an internal node)
-	 *
-	 */
-	public int typeOfNode(IAVLNode node){
-		if (!node.isRealNode())
-			return VIRTUAL_NODE;
-		if (!node.getRight().isRealNode() && !node.getLeft().isRealNode())
-			return LEAF_NODE;
-		if ((node.getRight().isRealNode() && !node.getLeft().isRealNode()) ||
-				(!node.getRight().isRealNode() && node.getLeft().isRealNode()))
-			return UNARY_NODE;
-		return INTERNAL_NODE;
-	}
-
-	/**
-	 * public IAVLNode FindNode(int k)
-	 *
-	 * Returns the AVLNode that contain k
-	 * if k doesnt exist in the tree- return null
-	 *
-	 */
-	public IAVLNode FindNode(int k){
-
-		IAVLNode ptr = this.root;
-
-		while (ptr != null) {
-			int key = ptr.getKey();
-			if (key == k) {
-				return ptr;
-			}
-			else{
-				if (k > key) {
-					ptr = ptr.getRight();
-				}
-				else{
-					ptr = ptr.getLeft();
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * public IAVLNode FindNodeSuccessor(IAVLNode node)
-	 *
-	 * Returns node's successor
-	 *
-	 */
-	public IAVLNode FindNodeSuccessor(IAVLNode node){
-		IAVLNode ptr;
-
-		// if node has right son- return the minimum from it sub-tree
-		if (node.getRight().isRealNode()){
-			ptr=node.getRight();
-			while (ptr.getLeft().isRealNode()) {
-				ptr = ptr.getLeft();
-			}
-			return ptr;
-		}
-
-		IAVLNode tempNode=node;
-		ptr=node.getParent();
-		while(ptr!=null && tempNode==ptr.getRight()){
-			tempNode=ptr;
-			ptr=tempNode.getParent();
-		}
-
-		// if x is the maximum it return null
-		return ptr;
-	}
-
-	/**
-	 * public IAVLNode ReplaceAndDelete(IAVLNode nodeToDel,IAVLNode nodeSec)
-	 *
-	 * make the deletion of a node with 2 sons- the successor has no left child
-	 * so we remove it from the tree and put him instead of the node we want do delete
-	 *
-	 */
-	public IAVLNode ReplaceAndDelete(IAVLNode nodeToDel,IAVLNode nodeSeccessor){
-
-		IAVLNode nodeParent=nodeSeccessor.getParent();
-		IAVLNode nodeChild=nodeSeccessor.getRight();
-
-		// Check which type of son the seccessor is for his parent and remove it
-		if(nodeParent.getRight()==nodeSeccessor)
-			nodeParent.setRight(nodeChild);
-
-		else
-			nodeParent.setLeft(nodeChild);
-
-		// Update new parent and child
-		nodeChild.setParent(nodeParent);
-
-		// put the nodeSeccessor in the place of nodeToDel
-		nodeSeccessor.setParent(nodeToDel.getParent());
-		nodeSeccessor.setLeft(nodeToDel.getLeft());
-		nodeSeccessor.setRight(nodeToDel.getRight());
-
-		return nodeParent;
-	}
-
-	/**
-	 * public int DeleteCases(IAVLNode node)
-	 *
-	 * Classifies the problem that was created from the deletion:
-	 * return 1 for rank difference of 22
-	 * 		  2 for rank difference of 31 with 11
-	 * 		  3 for rank difference of 31 with 12
-	 * 		  4 for rank difference of 31 with 21
-	 * 		  5 for rank difference of 13 with 11
-	 * 		  6 for rank difference of 13 with 12
-	 * 		  7 for rank difference of 13 with 21
-	 *
-	 */
-	public int DeleteCases(IAVLNode node){
-
-		int rankDifRight=getRankDifference(node.getRight());
-		int rankDifLeft=getRankDifference(node.getLeft());
-
-		if(rankDifRight==2 && rankDifLeft==2){
-			return 1;
-		}
-
-		if((rankDifLeft==3 && rankDifRight==1))
-		{
-			if(getRankDifference(node.getRight().getRight())==1 && getRankDifference(node.getRight().getLeft())==1){
-				return 2;
-			}
-			if(getRankDifference(node.getRight().getRight())==2 && getRankDifference(node.getRight().getLeft())==1){
-				return 3;
-			}
-			if(getRankDifference(node.getRight().getRight())==1 && getRankDifference(node.getRight().getLeft())==2){
-				return 4;
-			}
-		}
-
-		if((rankDifLeft==1 && rankDifRight==3))
-		{
-			if(getRankDifference(node.getLeft().getRight())==1 && getRankDifference(node.getLeft().getLeft())==1){
-				return 5;
-			}
-			if(getRankDifference(node.getLeft().getRight())==1 && getRankDifference(node.getLeft().getLeft())==2){
-				return 6;
-			}
-			if(getRankDifference(node.getLeft().getRight())==2 && getRankDifference(node.getLeft().getLeft())==1){
-				return 7;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * public int RebalanceDel(IAVLNode node)
-	 *
-	 * Rebalance the tree until its fixed and return number
-	 * of rotation that has been made along the way
-	 *
-	 */
-	public int RebalanceDel(IAVLNode node,int rot){
-		if(node.getParent()!= null) {
-			int delCase = DeleteCases(node);
-			switch (delCase) {
-				case 1:
-					node.setHeight(node.getHeight() - 1);
-					return RebalanceDel(node.getParent(),rot+1);
-				case 2:
-					node.setHeight(node.getHeight()-1);
-					node.getRight().setHeight(node.getRight().getHeight()+1);
-					Rotate(node,node.getRight(),LEFT);
-					return rot+3;
-				case 3:
-					node.setHeight(node.getHeight()-2);
-					Rotate(node,node.getRight(),LEFT);
-					return RebalanceDel(node.getParent(),rot+2);
-				case 4:
-					node.setHeight(node.getHeight()-2);
-					node.getRight().setHeight(node.getRight().getHeight()-1);
-					node.getRight().getLeft().setHeight(node.getRight().getLeft().getHeight()+1);
-					Rotate(node.getRight(),node.getRight().getLeft(),RIGHT);
-					Rotate(node.getRight(),node.getRight().getLeft(),RIGHT);//DONT KNOWWWWW
-					return RebalanceDel(node.getParent(),rot+5);
-				case 5:
-					node.setHeight(node.getHeight()-1);
-					node.getLeft().setHeight(node.getLeft().getHeight()+1);
-					Rotate(node,node.getLeft(),LEFT);
-					return 3;
-				case 6:
-					node.setHeight(node.getHeight()-2);
-					Rotate(node,node.getLeft(),LEFT);
-					return RebalanceDel(node.getParent(),rot+2);
-				case 7:
-					// code block
-					break;
-				default:
-					break;
-			}
-			return rot;
-		}
-		return rot;
-	}
-
-	/**
-	 * private int getRankDifference(IAVLNode node) {
-	 *
-	 * Rebalance the tree until its fixed and return number
-	 * of rotation that has been made along the way
-	 *
-	 */
-	private int getRankDifference(IAVLNode node) {
-		if(node == this.root) {
-			return -2;
-		}
-		else {
-			return node.getParent().getHeight() - node.getHeight();
-		}
 	}
 
 	/**
@@ -288,74 +71,6 @@ public class AVLTree {
 		}
 	}
 		return null;
-	}
-
-	/**
-	* Returns node.left.height - node.right.height. Results between -1 and 1 imply balanced.
-	* */
-
-	private int getBalanceFactor(IAVLNode node) {
-		if(node == null) return 0;
-		return node.getLeft().getHeight() - node.getRight().getHeight();
-	}
-
-	private void rotateRight(IAVLNode x) {
-		// Rotate right
-		IAVLNode parent = x.getParent();
-		IAVLNode y = x.getLeft();
-		IAVLNode rightTree = x.getRight();
-		y.setRight(x);
-		x.setLeft(rightTree);
-		y.setParent(x.getParent());
-		x.setParent(y);
-		rightTree.setParent(x);
-
-		if (parent != null) {
-			if(parent.getRight() == x) {
-				parent.setRight(y);
-			}
-			else {
-				parent.setLeft(y);
-			}
-		}
-		// Update heights
-		x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-		y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
-	}
-
-	private void rotateLeft(IAVLNode x) {
-		// Rotate left
-		IAVLNode parent = x.getParent();
-		IAVLNode y = x.getRight();
-		IAVLNode leftTree = x.getLeft();
-		y.setLeft(x);
-		x.setRight(leftTree);
-		y.setParent(x.getParent());
-		x.setParent(y);
-		leftTree.setParent(x);
-
-		if (parent != null) {
-			if(parent.getLeft() == x) {
-				parent.setLeft(y);
-			}
-			else {
-				parent.setRight(y);
-			}
-		}
-		// Update heights
-		x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
-		y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
-	}
-
-	/**
-	 * Traverse up the tree updating the heights
-	 * */
-	private void updateHeights(IAVLNode node) {
-		IAVLNode ptr = node;
-		while(ptr != null) {
-			ptr.setHeight(1 + Math.max(ptr.getLeft().getHeight(), ptr.getRight().getHeight()));
-			ptr = ptr.getParent();
-		}
 	}
 
 	/**
@@ -410,6 +125,7 @@ public class AVLTree {
 			parent.setRight(toInsert);
 			toInsert.setParent(parent);
 		}
+
 		// Update parent height
 		parent.setHeight(1 + Math.max(parent.getLeft().getHeight(), parent.getRight().getHeight()));
 
@@ -477,11 +193,19 @@ public class AVLTree {
 	 */
 	public int delete(int k)
 	{
+		if(this.empty())
+			return -1;
+
 		IAVLNode nodeToDelete=FindNode(k);
 
 		// if k doesnt exist in the tree- return -1
 		if(nodeToDelete == null) {
 			return -1;
+		}
+
+		if(nodeToDelete==this.getRoot())
+		{
+			this.root=null;
 		}
 
 		IAVLNode nodeParent=nodeToDelete.getParent();
@@ -495,11 +219,13 @@ public class AVLTree {
 		switch(nodeType) {
 			// replace the leaf to be a virtual son for his parent
 			case LEAF_NODE:
+				IAVLNode virtualNode=new AVLNode(-1, null, false);
 				if (nodeParent.getRight() == nodeToDelete) {
-					nodeParent.setRight(VIRTUAL);
+					nodeParent.setRight(virtualNode);
 				} else {
-					nodeParent.setLeft(VIRTUAL);
+					nodeParent.setLeft(virtualNode);
 				}
+				virtualNode.setParent(nodeParent);
 				nodeToFix = nodeParent;
 				break;
 			// replace the unary node with his son
@@ -517,11 +243,11 @@ public class AVLTree {
 					}
 				} else {
 					if (nodeToDelete.getLeft().isRealNode()) {
-						nodeParent.setLeft(nodeToDelete.getRight());
-						nodeToDelete.getRight().setParent(nodeParent);
-					} else {
 						nodeParent.setLeft(nodeToDelete.getLeft());
 						nodeToDelete.getLeft().setParent(nodeParent);
+					} else {
+						nodeParent.setLeft(nodeToDelete.getRight());
+						nodeToDelete.getRight().setParent(nodeParent);
 					}
 				}
 				nodeToFix = nodeParent;
@@ -535,9 +261,16 @@ public class AVLTree {
 
 		if (nodeToFix==null)
 			return 0;
+
+		// the parent of the deleted node has the same height
+		// so all the heights are kept, no changes needed- valid Avl Tree
+		if(!IsHeightChanged(nodeToFix))
+			return 0;
+
+		nodeToFix.setHeight(1+Math.max(nodeToFix.getLeft().getHeight(), nodeToFix.getRight().getHeight()));
+		// add 1 for the demote and rebalance tree if needed.
 		return RebalanceDel(nodeToFix,0);
 	}
-
 
 	/**
 	 * public String min()
@@ -579,19 +312,6 @@ public class AVLTree {
 		return ptr.getValue();
 	}
 
-
-	/**
-	 * Recursive helper function to insert the keys to the array
-	 * */
-	private int keysToArrayRec(IAVLNode node, int i, int[] arr) {
-		if(node.isRealNode()) {
-			i = keysToArrayRec(node.getLeft(), i, arr);
-			arr[i] = node.getKey();
-			i = keysToArrayRec(node.getRight(), i + 1, arr);
-		}
-		return i;
-	}
-
 	/**
 	 * public int[] keysToArray()
 	 *
@@ -608,17 +328,6 @@ public class AVLTree {
 		keysToArrayRec(this.root, 0, retArray);
 
 		return retArray;
-	}
-	/**
-	 * Recursive helper function to insert the info to the array
-	 * */
-	private int infoToArrayRec(IAVLNode node, int i, String[] arr) {
-		if(node.isRealNode()) {
-			i = infoToArrayRec(node.getLeft(), i, arr);
-			arr[i] = node.getValue();
-			i = infoToArrayRec(node.getRight(), i + 1, arr);
-		}
-		return i;
 	}
 
 	/**
@@ -640,7 +349,6 @@ public class AVLTree {
 		return retArray;
 	}
 
-
 	/**
 	 * public int size()
 	 *
@@ -649,16 +357,6 @@ public class AVLTree {
 	public int size()
 	{
 		return this.size;
-	}
-
-	/**
-	 * public int getRoot()
-	 *
-	 * Returns the root AVL node, or null if the tree is empty
-	 */
-	public IAVLNode getRoot()
-	{
-		return this.root;
 	}
 
 	/**
@@ -693,11 +391,449 @@ public class AVLTree {
 	 *
 	 * precondition: keys(t) < x < keys() or keys(t) > x > keys(). t/tree might be empty (rank = -1).
 	 * postcondition: none
+	 *
 	 */
 	public int join(IAVLNode x, AVLTree t)
 	{
 		return -1;
 	}
+
+
+	/**
+	 * public int getRoot()
+	 *
+	 * Returns the root AVL node, or null if the tree is empty
+	 *
+	 */
+	public IAVLNode getRoot()
+	{
+		return this.root;
+	}
+
+
+	/**
+	 * private int keysToArrayRec(IAVLNode node, int i, int[] arr)
+	 *
+	 * Recursive helper function to insert the keys to the array
+	 *
+	 * */
+	private int keysToArrayRec(IAVLNode node, int i, int[] arr) {
+		if(node.isRealNode()) {
+			i = keysToArrayRec(node.getLeft(), i, arr);
+			arr[i] = node.getKey();
+			i = keysToArrayRec(node.getRight(), i + 1, arr);
+		}
+		return i;
+	}
+
+	/**
+	 * private int infoToArrayRec(IAVLNode node, int i, String[] arr)
+	 *
+	 * Recursive helper function to insert the info to the array
+	 *
+	 * */
+	private int infoToArrayRec(IAVLNode node, int i, String[] arr) {
+		if(node.isRealNode()) {
+			i = infoToArrayRec(node.getLeft(), i, arr);
+			arr[i] = node.getValue();
+			i = infoToArrayRec(node.getRight(), i + 1, arr);
+		}
+		return i;
+	}
+
+	/**
+	 * private int getBalanceFactor(IAVLNode node)
+	 *
+	 * Returns node.left.height - node.right.height. Results between -1 and 1 imply balanced.
+	 *
+	 **/
+	private int getBalanceFactor(IAVLNode node) {
+		if(node == null) return 0;
+		return node.getLeft().getHeight() - node.getRight().getHeight();
+	}
+
+	/**
+	 * private void rotateRight(IAVLNode x)
+	 *
+	 * Rotate right according to a given node and update height
+	 *
+	 **/
+	private void rotateRight(IAVLNode x) {
+		// Rotate right
+		IAVLNode parent = x.getParent();
+		IAVLNode y = x.getLeft();
+		IAVLNode rightTree = y.getRight();
+		y.setRight(x);
+		x.setLeft(rightTree);
+		y.setParent(x.getParent());
+		x.setParent(y);
+		rightTree.setParent(x);
+
+		if (parent != null) {
+			if(parent.getRight() == x) {
+				parent.setRight(y);
+			}
+			else {
+				parent.setLeft(y);
+			}
+		}
+		// Update heights
+		x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+		y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+	}
+
+	/**
+	 * private void rotateLeft(IAVLNode x)
+	 *
+	 * Rotate left according to a given node and update height
+	 *
+	 **/
+	private void rotateLeft(IAVLNode x) {
+		// Rotate left
+		IAVLNode parent = x.getParent();
+		IAVLNode y = x.getRight();
+		IAVLNode leftTree = x.getLeft();
+		y.setLeft(x);
+		x.setRight(leftTree);
+		y.setParent(x.getParent());
+		x.setParent(y);
+		leftTree.setParent(x);
+
+		if (parent != null) {
+			if(parent.getLeft() == x) {
+				parent.setLeft(y);
+			}
+			else {
+				parent.setRight(y);
+			}
+		}
+		// Update heights
+		x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
+		y.setHeight(1 + Math.max(y.getLeft().getHeight(), y.getRight().getHeight()));
+	}
+
+
+	/**
+	 * private Boolean IsHeightChanged(IAVLNode node)
+	 *
+	 * Returns true if the current value in the height's node is different
+	 * from the current height of the node
+	 *
+	 */
+	private Boolean IsHeightChanged(IAVLNode node)
+	{
+		//check if node's height hasnt changed
+		int tempHeight=1+Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
+		if(tempHeight==node.getHeight())
+			// hasn't changed
+			return false;
+		return true;
+	}
+
+	/**
+	 * private void updateHeights(IAVLNode node)
+	 *
+	 * Traverse up the tree updating the heights
+	 *
+	 **/
+	private void updateHeights(IAVLNode node) {
+		IAVLNode ptr = node;
+		while(ptr != null) {
+			ptr.setHeight(1 + Math.max(ptr.getLeft().getHeight(), ptr.getRight().getHeight()));
+			ptr = ptr.getParent();
+		}
+	}
+
+	/**
+	 * private int typeOfNode(IAVLNode)
+	 *
+	 * Returns 0 if the node is a virtual node
+	 * 		   1 if the node is a leaf
+	 * 		   2 if the node is an unary node
+	 * 		   3- else (the node is an internal node)
+	 *
+	 */
+	private int typeOfNode(IAVLNode node){
+		if (!node.isRealNode())
+			return VIRTUAL_NODE;
+		if (!node.getRight().isRealNode() && !node.getLeft().isRealNode())
+			return LEAF_NODE;
+		if ((node.getRight().isRealNode() && !node.getLeft().isRealNode()) ||
+				(!node.getRight().isRealNode() && node.getLeft().isRealNode()))
+			return UNARY_NODE;
+		return INTERNAL_NODE;
+	}
+
+	/**
+	 * private IAVLNode FindNode(int k)
+	 *
+	 * Returns the AVLNode that contain k
+	 * if k doesnt exist in the tree- return null
+	 *
+	 */
+	private IAVLNode FindNode(int k){
+
+		IAVLNode ptr = this.root;
+
+		while (ptr != null) {
+			int key = ptr.getKey();
+			if (key == k) {
+				return ptr;
+			}
+			else{
+				if (k > key) {
+					ptr = ptr.getRight();
+				}
+				else{
+					ptr = ptr.getLeft();
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * private IAVLNode FindNodeSuccessor(IAVLNode node)
+	 *
+	 * Returns node's successor
+	 *
+	 */
+	private IAVLNode FindNodeSuccessor(IAVLNode node){
+		IAVLNode ptr;
+
+		// if node has right son- return the minimum from it sub-tree
+		if (node.getRight().isRealNode()){
+			ptr=node.getRight();
+			while (ptr.getLeft().isRealNode()) {
+				ptr = ptr.getLeft();
+			}
+			return ptr;
+		}
+
+		IAVLNode tempNode=node;
+		ptr=node.getParent();
+		while(ptr!=null && tempNode==ptr.getRight()){
+			tempNode=ptr;
+			ptr=tempNode.getParent();
+		}
+
+		// if x is the maximum it return null
+		return ptr;
+	}
+
+	/**
+	 * private IAVLNode ReplaceAndDelete(IAVLNode nodeToDel,IAVLNode nodeSec)
+	 *
+	 * make the deletion of a node with 2 sons- the successor has no left child
+	 * so we remove it from the tree and put him instead of the node we want do delete
+	 *
+	 */
+	private IAVLNode ReplaceAndDelete(IAVLNode nodeToDel,IAVLNode nodeSeccessor){
+
+		IAVLNode nodeParent=nodeSeccessor.getParent();
+		IAVLNode nodeChild=nodeSeccessor.getRight();
+
+		// Check which type of son the seccessor is for his parent and remove it
+		if(nodeParent.getRight()==nodeSeccessor)
+			nodeParent.setRight(nodeChild);
+
+		else
+			nodeParent.setLeft(nodeChild);
+
+		// Update new parent and child
+		nodeChild.setParent(nodeParent);
+
+		// put the nodeSeccessor in the place of nodeToDel
+		nodeSeccessor.setParent(nodeToDel.getParent());
+		nodeSeccessor.setLeft(nodeToDel.getLeft());
+		nodeSeccessor.setRight(nodeToDel.getRight());
+
+		return nodeParent;
+	}
+
+	/**
+	 * private int Rotate(IAVLNode node,int direction1,int direction2)
+	 *
+	 * make right/left rotation, update tree
+	 * and return number of promote+demote/rotation
+	 * that has been made
+	 *
+	 */
+	private int Rotate(IAVLNode node,int direction) {
+
+		int count = 0;
+
+		if (direction == RIGHT) {
+			// get the node/sub-trees that will be replaced
+			IAVLNode x = node;
+			IAVLNode y = x.getLeft();
+			IAVLNode rightTreeY = y.getRight();
+
+			// connect y to x parent or make it a root
+			if (node.getParent() == null) {
+				this.root = y;
+			} else {
+				// get the node/sub-trees that will be replaced
+				IAVLNode parentX = node.getParent();
+
+				if (parentX.getRight() == node) {
+					parentX.setRight(y);
+					y.setParent(parentX);
+				} else {
+					parentX.setLeft(y);
+					y.setParent(parentX);
+				}
+			}
+
+			y.setRight(x);
+			x.setParent(y);
+			x.setLeft(rightTreeY);
+			rightTreeY.setParent(x);
+
+			// Update height and count demote/promote
+			if(IsHeightChanged(x)) {
+				int tempHeight=x.getHeight();
+				x.setHeight(1+Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+				count += (tempHeight-x.getHeight());
+			}
+			if(IsHeightChanged(y)) {
+				int tempHeight=y.getHeight();
+				y.setHeight(1+Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+				count += (y.getHeight()-tempHeight);
+			}
+		}
+		else {
+			if (direction == LEFT) {
+
+				// get the node/sub-trees that will be replaced
+				IAVLNode x = node;
+				IAVLNode y = x.getLeft();
+				IAVLNode leftTreeY = y.getLeft();
+
+				if (node.getParent() == null) {
+					this.root = y;
+				} else {
+
+					IAVLNode parentX = node.getParent();
+
+					if (parentX.getRight() == node) {
+						parentX.setRight(y);
+						y.setParent(parentX);
+					} else {
+						parentX.setLeft(y);
+						y.setParent(parentX);
+					}
+
+					y.setLeft(x);
+					x.setParent(y);
+					x.setRight(leftTreeY);
+					leftTreeY.setParent(x);
+				}
+				y.setLeft(x);
+				x.setParent(y);
+				x.setRight(leftTreeY);
+				leftTreeY.setParent(x);
+
+				// Update height and count demote/promote
+				if (IsHeightChanged(x)) {
+					int tempHeight = x.getHeight();
+					x.setHeight(1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+					count += (tempHeight - x.getHeight());
+				}
+				if (IsHeightChanged(y)) {
+					int tempHeight = y.getHeight();
+					y.setHeight(1 + Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+					count += (y.getHeight() - tempHeight);
+				}
+			}
+		}
+		return 1+count;
+	}
+
+	/**
+	 * private int RebalanceDel(IAVLNode node)
+	 *
+	 * Rebalance the tree until its fixed and return number
+	 * of rotation that has been made along the way
+	 *
+	 */
+	private int RebalanceDel(IAVLNode node,int rot){
+
+		//node isnt a root
+		if(node.getParent()!=null) {
+
+			boolean isHeightChanged=IsHeightChanged(node);
+			int balanceParent=this.getBalanceFactor(node);
+
+			// BF is less then 2 and bigger then -2
+			if(balanceParent<2 && balanceParent>-2)
+			{
+				// the parent of the changed node has the
+				// same height so all the heights are kept,
+				// no changes needed- valid Avl Tree
+				if(!isHeightChanged)
+					return rot;
+
+				// deomote- update height
+				node.setHeight(1+Math.max(node.getLeft().getHeight(), node.getRight().getHeight()));
+
+				// the height is changed, we need to go up the tree and
+				// fix if needed
+				return RebalanceDel(node.getParent(),rot+1);
+			}
+			else if (balanceParent==-2)
+			{
+				int balanceSon=this.getBalanceFactor(node.getRight());
+				if(balanceSon==-1 || balanceSon==0)
+				{
+					rot+=this.Rotate(node,LEFT);
+					return RebalanceDel(node.getParent(),rot);
+				}
+				else
+				if(balanceSon==1)
+				{
+					rot+=this.Rotate(node,RIGHT);
+					rot+=this.Rotate(node,LEFT);
+					return RebalanceDel(node.getParent(),rot);
+				}
+			}
+			else
+			if(balanceParent==2)
+			{
+				int balanceSon=this.getBalanceFactor(node.getLeft());
+				if(balanceSon==1 || balanceSon==0)
+				{
+					rot+=this.Rotate(node,RIGHT);
+					return RebalanceDel(node.getParent(),rot);
+				}
+				else if(balanceSon==-1)
+				{
+					rot+=this.Rotate(node,LEFT);
+					rot+=this.Rotate(node,RIGHT);
+					return RebalanceDel(node.getParent(),rot);
+				}
+			}
+		}
+		return rot;
+	}
+
+	/**
+	 * private int getRankDifference(IAVLNode node) {
+	 *
+	 *
+	 * Rebalance the tree until its fixed and return number
+	 * of rotation that has been made along the way
+	 *
+	 */
+	private int getRankDifference(IAVLNode node) {
+		if(node == this.root) {
+			return -2;
+		}
+		else {
+			return node.getParent().getHeight() - node.getHeight();
+		}
+	}
+
 
 	/**
 	 * public interface IAVLNode
