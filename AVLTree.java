@@ -20,7 +20,7 @@ public class AVLTree {
 	private final static int RIGHT=2;
 
 
-	IAVLNode root;
+	private IAVLNode root;
 	private int size = 0;
 
 
@@ -29,15 +29,18 @@ public class AVLTree {
 	 *
 	 * Constructor of empty AVL tree
 	 *
+	 * Complexity - O(1)
 	 */
 	public AVLTree() {
 		this.root = null;
+		this.size=0;
 	}
 
 	/**
 	 * public boolean empty()
 	 *
 	 * Returns true if and only if the tree is empty.
+	 * Complexity - O(1)
 	 *
 	 */
 	public boolean empty() {
@@ -49,16 +52,16 @@ public class AVLTree {
 	 *
 	 * Returns the info of an item with key k if it exists in the tree.
 	 * otherwise, returns null.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
-
 	public String search(int k)
 	{
 		// Standard binary search
 		IAVLNode ptr = this.root;
-		while(ptr != null) {
-
+		while(ptr.isRealNode()) {
 			int key = ptr.getKey();
-
 			if(key == k) {
 				return ptr.getValue();
 			}
@@ -82,6 +85,9 @@ public class AVLTree {
 	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
 	 * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
 	 * Returns -1 if an item with key k already exists in the tree.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public int insert(int k, String i) {
 		// If tree is empty, set root as new node with key k and info i
@@ -136,6 +142,9 @@ public class AVLTree {
 	 * Returns the number of re-balancing operations, or 0 if no re-balancing operations were necessary.
 	 * A promotion/rotation counts as one re-balance operation, double-rotation is counted as 2.
 	 * Returns -1 if an item with key k was not found in the tree.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public int delete(int k)
 	{
@@ -172,6 +181,9 @@ public class AVLTree {
 	 *
 	 * Returns the info of the item with the smallest key in the tree,
 	 * or null if the tree is empty.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public String min()
 	{
@@ -192,6 +204,9 @@ public class AVLTree {
 	 *
 	 * Returns the info of the item with the largest key in the tree,
 	 * or null if the tree is empty.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public String max()
 	{
@@ -212,6 +227,8 @@ public class AVLTree {
 	 *
 	 * Returns a sorted array which contains all keys in the tree,
 	 * or an empty array if the tree is empty.
+	 *
+	 * Complexity -
 	 */
 
 	public int[] keysToArray() {
@@ -231,6 +248,9 @@ public class AVLTree {
 	 * Returns an array which contains all info in the tree,
 	 * sorted by their respective keys,
 	 * or an empty array if the tree is empty.
+	 *
+	 * Complexity -
+	 *
 	 */
 	public String[] infoToArray()
 	{
@@ -248,9 +268,13 @@ public class AVLTree {
 	 * public int size()
 	 *
 	 * Returns the number of nodes in the tree.
+	 *
+	 * Complexity - O(1)
+	 *
 	 */
 	public int size()
 	{
+
 		return this.size;
 	}
 
@@ -262,6 +286,9 @@ public class AVLTree {
 	 *
 	 * precondition: search(x) != null (i.e. you can also assume that the tree is not empty)
 	 * postcondition: none
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public AVLTree[] split(int x)
 	{
@@ -356,6 +383,8 @@ public class AVLTree {
 	 * precondition: keys(t) < x < keys() or keys(t) > x > keys(). t/tree might be empty (rank = -1).
 	 * postcondition: none
 	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	public int join(IAVLNode x, AVLTree t)
 	{
@@ -376,7 +405,6 @@ public class AVLTree {
 			//both trees are empty
 			if(T1==null && T2==null) {
 				this.root = x;
-				x.setSize(1);
 				return 1;
 			}
 
@@ -515,6 +543,8 @@ public class AVLTree {
 	 *
 	 * Returns the root AVL node, or null if the tree is empty
 	 *
+	 * Complexity - O(1)
+	 *
 	 */
 	public IAVLNode getRoot()
 	{
@@ -526,6 +556,8 @@ public class AVLTree {
 	 * private int keysToArrayRec(IAVLNode node, int i, int[] arr)
 	 *
 	 * Recursive helper function to insert the keys to the array
+	 *
+	 * Complexity -
 	 *
 	 * */
 	private int keysToArrayRec(IAVLNode node, int i, int[] arr) {
@@ -542,6 +574,8 @@ public class AVLTree {
 	 *
 	 * Recursive helper function to insert the info to the array
 	 *
+	 * Complexity -
+	 *
 	 * */
 	private int infoToArrayRec(IAVLNode node, int i, String[] arr) {
 		if(node.isRealNode()) {
@@ -557,9 +591,12 @@ public class AVLTree {
 	 *
 	 * Returns node.left.height - node.right.height. Results between -1 and 1 imply balanced.
 	 *
+	 * Complexity - O(1)
+	 *
 	 **/
 	private int getBalanceFactor(IAVLNode node) {
-		if(node == null) return 0;
+		if(node == null)
+			return 0;
 		return node.getLeft().getHeight() - node.getRight().getHeight();
 	}
 
@@ -567,6 +604,8 @@ public class AVLTree {
 	 * private void rotateRight(IAVLNode x)
 	 *
 	 * Rotate right according to a given node and update height
+	 *
+	 * Complexity - O(1)
 	 *
 	 **/
 	private void rotateRight(IAVLNode x) {
@@ -608,6 +647,8 @@ public class AVLTree {
 	 * private void rotateDouble(IAVLNode x)
 	 *
 	 * Double Rotation
+	 *
+	 * Complexity - O(1)
 	 *
 	 **/
 	private void rotateDouble(IAVLNode y, int r1,int r2) {
@@ -705,6 +746,8 @@ public class AVLTree {
 	 *
 	 * Rotate left according to a given node and update height
 	 *
+	 * Complexity - O(1)
+	 *
 	 **/
 	private void rotateLeft(IAVLNode x) {
 		// Rotate left
@@ -747,6 +790,8 @@ public class AVLTree {
 	 * Traverse up the tree updating the heights
 	 * Return number of promotions
 	 *
+	 * Complexity - O(1)
+	 *
 	 **/
 	private int updateHeights(IAVLNode node) {
 		IAVLNode ptr = node;
@@ -769,6 +814,8 @@ public class AVLTree {
 	 * 		   2 if the node is an unary node
 	 * 		   3- else (the node is an internal node)
 	 *
+	 * Complexity - O(1)
+	 *
 	 */
 	private int typeOfNode(IAVLNode node){
 		if (!node.isRealNode())
@@ -783,8 +830,13 @@ public class AVLTree {
 
 	/**
 	 *
+	 * private int rebalanceAfterInsertion(IAVLNode parent, int k)
 	 *
+	 * Rebalnce the tree after insertion operation
 	 * @return number of re-balancing operations.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	private int rebalanceAfterInsertion(IAVLNode parent, int k) {
 		int promotions = 0;
@@ -868,7 +920,9 @@ public class AVLTree {
 	 *
 	 * private void insertionForJoin(IAVLNode toInsert)
 	 *
-	 * Rebalnce the tree after join operation
+	 * insert the node to the right place and rebalnce the tree after join operation
+	 *
+	 * Complexity - O(log n)
 	 *
 	 */
 	private void insertionForJoin(IAVLNode toInsert) {
@@ -903,9 +957,12 @@ public class AVLTree {
 	}
 
 	/**
+	 *private void rebalanceAfterJoin(IAVLNode node)
 	 *
+	 * Rebalnce the tree after join operation
 	 *
-	 * @return number of re-balancing operations.
+	 * Complexity - O(log n)
+	 *
 	 */
 	private void rebalanceAfterJoin(IAVLNode node) {
 
@@ -963,8 +1020,14 @@ public class AVLTree {
 
 	/**
 	 *
+	 * private int rebalanceAfterDeletion(IAVLNode parentOfDeleted)
+	 *
+	 * Rebalnce the tree after delete operation
 	 * @pre parentOfDeleted != null
 	 * @return number of re-balancing operations.
+	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	private int rebalanceAfterDeletion(IAVLNode parentOfDeleted) {
 		IAVLNode ptr = parentOfDeleted;
@@ -1020,7 +1083,12 @@ public class AVLTree {
 	}
 
 	/**
+	 * private void swapNodes(IAVLNode nodeA, IAVLNode nodeB)
+	 *
 	 * @pre: nodeA.isRealNode() == true  == nodeB.isRealNode()
+	 *
+	 * Complexity -
+	 *
 	 */
 	private void swapNodes(IAVLNode nodeA, IAVLNode nodeB) {
 		// Cases where one node is parent of other node
@@ -1100,7 +1168,12 @@ public class AVLTree {
 	}
 
 	/**
+	 * private void swapParentAndChild(IAVLNode parent, IAVLNode child)
+	 *
 	 * @pre: child.getParent() == parent
+	 *
+	 * Complexity -
+	 *
 	 */
 	private void swapParentAndChild(IAVLNode parent, IAVLNode child) {
 		if(parent.getLeft() == child) {
@@ -1169,6 +1242,8 @@ public class AVLTree {
 	 * Returns the AVLNode that contain k
 	 * If k doesn't exist in the tree - return null
 	 *
+	 * Complexity - O(log n)
+	 *
 	 */
 	private IAVLNode findNode(int k) {
 
@@ -1196,6 +1271,8 @@ public class AVLTree {
 	 *
 	 * Returns node's successor
 	 *
+	 * Complexity -
+	 *
 	 */
 	private IAVLNode findNodeSuccessor(IAVLNode node){
 		IAVLNode ptr;
@@ -1221,7 +1298,12 @@ public class AVLTree {
 	}
 
 	/**
+	 * private void removeLeafNode(IAVLNode node)
+	 *
 	 * @pre : node is a leaf node && not the root
+	 *
+	 * Complexity -
+	 *
 	 */
 	private void removeLeafNode(IAVLNode node) {
 		boolean isLeftChild = node.getParent().getLeft() == node;
@@ -1240,7 +1322,12 @@ public class AVLTree {
 	}
 
 	/**
+	 * private void removeUnaryNode(IAVLNode node)
+	 *
 	 * @pre: node is an unary node
+	 *
+	 * Complexity -
+	 *
 	 */
 	private void removeUnaryNode(IAVLNode node) {
 		boolean isLeftChild = node.getParent().getLeft() == node;
@@ -1271,8 +1358,13 @@ public class AVLTree {
 	}
 
 	/**
-	 * @pre: node is an internal node.
+	 * private void removeInternalNode(IAVLNode node)
+	 *
 	 * Internal node has a right child so its successor is a leaf node or unary.
+	 * @pre: node is an internal node.
+	 *
+	 * Complexity -
+	 *
 	 */
 	private void removeInternalNode(IAVLNode node) {
 		IAVLNode successor = findNodeSuccessor(node);
@@ -1290,8 +1382,9 @@ public class AVLTree {
 	/**
 	 * private void setSubtree(IAVLNode root)
 	 *
-	 * make the sub-tree of nodeToRoot be an AVLTree
-	 * @pre: tree is empty
+	 * make nodeToRoot to be an AVLTree
+	 *
+	 * Complexity -O(1)
 	 *
 	 */
 	private void setSubtree(IAVLNode nodeToRoot) {
@@ -1300,6 +1393,14 @@ public class AVLTree {
 		this.size=nodeToRoot.getSize();
 	}
 
+	/**
+	 * private int removeRootNode()
+	 *
+	 *
+	 *
+	 * Complexity -
+	 *
+	 */
 	private int removeRootNode() {
 		IAVLNode root = this.root;
 		if(this.size == 1) { // If the tree only has one node, remove it and set the tree as empty
@@ -1338,6 +1439,11 @@ public class AVLTree {
 		}
 	}
 
+
+	/**
+	 * ==================================================FOR US-TO DELETE================================================================
+	 *
+	 */
 	public void print() {
 		IAVLNode root=this.root;
 		List<List<String>> lines = new ArrayList<List<String>>();
@@ -1487,6 +1593,15 @@ public class AVLTree {
 		private int height;
 		private int size;
 
+		/**
+		 * public AVLNode(int key, String info, boolean isRealNode)
+		 *
+		 * Constructor of a node- virtual or real.
+		 * if real- has size 1 (at the beginning), has its key and info, no parent, 2 virtual sons and height=0
+		 * if virtual- has no sons, size=0, height= -1 the info will be null and key= -1.
+		 *
+		 * Complexity - O(1)
+		 */
 		public AVLNode(int key, String info, boolean isRealNode) {
 			this.key = key;
 			this.info = info;
@@ -1494,7 +1609,6 @@ public class AVLTree {
 			this.right = isRealNode ? new AVLNode(-1, null, false) : null;
 			this.isRealNode = isRealNode;
 			this.height = isRealNode ? 0 : -1;
-			this.size = isRealNode ? 1 : 0;
 			this.parent = null;
 
 			if(this.isRealNode) {
@@ -1554,16 +1668,40 @@ public class AVLTree {
 			return this.height;
 		}
 
+		/**
+		 * public int getSize()
+		 *
+		 * Returns the size of the node's subtree.
+		 * Complexity --O(1)
+		 *
+		 */
 		public int getSize()
 		{
 			return this.size;
 		}
+
+		/**
+		 * public void updateSize()
+		 *
+		 * Update the size according to it's sons
+		 * Complexity --O(1)
+		 *
+		 */
 		public void updateSize() {
 			if(this.isRealNode){
 				this.size=this.left.getSize()+this.right.getSize()+1;
 			}
 		}
-		public void setSize(int size) {
+
+		/**
+		 * public void setSize(int size)
+		 *
+		 * Sets the size of the node's subtree.
+		 * Complexity -O(1)
+		 *
+		 */
+		public void setSize(int size)
+		{
 			this.size=size;
 		}
 	}
