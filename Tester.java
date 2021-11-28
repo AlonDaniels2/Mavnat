@@ -9,7 +9,7 @@ public class Tester {
         checkProblem3();
         checkProblem2();
         checkProblem();
-        /*AVLTree tree=new AVLTree();
+        AVLTree tree=new AVLTree();
 
         for (int i=1;i<=11;i++){
             tree.insert(i,Integer.toString(i));
@@ -21,9 +21,9 @@ public class Tester {
 
         AVLTree[] splitRes=tree.split(4);
         splitRes[0].print();
-        //System.out.println(Arrays.toString(splitRes[0].keysToArray()));
+        System.out.println(Arrays.toString(splitRes[0].keysToArray()));
         splitRes[1].print();
-        //System.out.println(Arrays.toString(splitRes[1].keysToArray()));*/
+        System.out.println(Arrays.toString(splitRes[1].keysToArray()));
 
     }
 

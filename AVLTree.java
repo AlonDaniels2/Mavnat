@@ -60,7 +60,7 @@ public class AVLTree {
 	{
 		// Standard binary search
 		IAVLNode ptr = this.root;
-		while(ptr.isRealNode()) {
+		while(ptr!=null) {
 			int key = ptr.getKey();
 			if(key == k) {
 				return ptr.getValue();
@@ -383,7 +383,7 @@ public class AVLTree {
 	 * precondition: keys(t) < x < keys() or keys(t) > x > keys(). t/tree might be empty (rank = -1).
 	 * postcondition: none
 	 *
-	 * Complexity - O(log n)
+	 * Complexity - O(|tree.root.height - t.root.height| + 1)
 	 *
 	 */
 	public int join(IAVLNode x, AVLTree t)
@@ -393,7 +393,7 @@ public class AVLTree {
 
 		// x is a single node
 		x.setHeight(0);
-		x.setSize(1);
+		x.updateSize();
 
 		this.size=this.size+t.size+1;
 
@@ -646,8 +646,8 @@ public class AVLTree {
 	/**
 	 * private void rotateDouble(IAVLNode x)
 	 *
-	 * Double Rotation
-	 *
+	 * Double Rotation- according to a given node and 2 directions
+	 * @pre r1!=r2 && (r1==LEFT || r1==RIGHT) && (r2==LEFT || r2==RIGHT)
 	 * Complexity - O(1)
 	 *
 	 **/
@@ -744,7 +744,7 @@ public class AVLTree {
 	/**
 	 * private void rotateLeft(IAVLNode x)
 	 *
-	 * Rotate left according to a given node and update height
+	 * Rotate left according to a given node and update height and size
 	 *
 	 * Complexity - O(1)
 	 *
@@ -961,7 +961,7 @@ public class AVLTree {
 	 *
 	 * Rebalnce the tree after join operation
 	 *
-	 * Complexity - O(log n)
+	 * Complexity - O(node.height)=O(log n)
 	 *
 	 */
 	private void rebalanceAfterJoin(IAVLNode node) {
@@ -1568,8 +1568,6 @@ public class AVLTree {
 		public boolean isRealNode(); // Returns True if this is a non-virtual AVL node.
 		public void setHeight(int height); // Sets the height of the node.
 		public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
-
-		public void setSize(int size);// Sets the size of the node's subtree.
 		public int getSize();// Returns the size of the node's subtree.
 		public void updateSize();// Sets the size of the node's subtree.
 	}
@@ -1622,47 +1620,112 @@ public class AVLTree {
 
 		}
 
-
+		/**
+		 * public int getKey()
+		 * Returns node's key (for virtual node return -1).
+		 * Complexity --O(1)
+		 */
 		public int getKey()
 		{
 			return this.key;
 		}
+
+		/**
+		 * public String getValue()
+		 * Returns node's value [info], for virtual node returns null.
+		 * Complexity --O(1)
+		 */
 		public String getValue()
 		{
 			return this.info;
 		}
-		public void setLeft(IAVLNode node) {
-			this.left = node;
-		};
 
+		/**
+		 * public void setLeft(IAVLNode node)
+		 * Sets left child.
+		 * Complexity --O(1)
+		 */
+		public void setLeft(IAVLNode node)
+		{
+			this.left = node;
+		}
+
+		/**
+		 * public IAVLNode getLeft()
+		 * Returns left child, if there is no left child returns null.
+		 * Complexity --O(1)
+		 */
 		public IAVLNode getLeft()
 		{
 			return this.left;
 		}
+
+		/**
+		 * public void setRight(IAVLNode node)
+		 * Sets right child.
+		 * Complexity --O(1)
+		 */
 		public void setRight(IAVLNode node)
 		{
 			this.right = node;
 		}
+
+		/**
+		 * public IAVLNode getRight()
+		 * Returns right child, if there is no right child returns null.
+		 * Complexity --O(1)
+		 */
 		public IAVLNode getRight()
 		{
 			return this.right;
 		}
+
+		/**
+		 * public void setParent(IAVLNode node)
+		 * Sets parent.
+		 * Complexity --O(1)
+		 */
 		public void setParent(IAVLNode node)
 		{
 			this.parent = node;
 		}
+
+		/**
+		 * public IAVLNode getParent()
+		 * Returns the parent, if there is no parent return null.
+		 * Complexity --O(1)
+		 */
 		public IAVLNode getParent()
 		{
 			return this.parent;
 		}
+
+		/**
+		 * public boolean isRealNode()
+		 * Returns True if this is a non-virtual AVL node.
+		 * Complexity --O(1)
+		 *
+		 */
 		public boolean isRealNode()
 		{
 			return this.isRealNode;
 		}
+
+		/**
+		 * public void setHeight(int height)
+		 * Sets the height of the node.
+		 * Complexity --O(1)
+		 */
 		public void setHeight(int height)
 		{
 			this.height = height;
 		}
+
+		/**
+		 * public int getHeight()
+		 * Returns the height of the node (-1 for virtual nodes).
+		 * Complexity --O(1)
+		 */
 		public int getHeight()
 		{
 			return this.height;
@@ -1670,10 +1733,8 @@ public class AVLTree {
 
 		/**
 		 * public int getSize()
-		 *
 		 * Returns the size of the node's subtree.
 		 * Complexity --O(1)
-		 *
 		 */
 		public int getSize()
 		{
@@ -1682,27 +1743,16 @@ public class AVLTree {
 
 		/**
 		 * public void updateSize()
-		 *
 		 * Update the size according to it's sons
 		 * Complexity --O(1)
-		 *
 		 */
-		public void updateSize() {
+		public void updateSize()
+		{
 			if(this.isRealNode){
 				this.size=this.left.getSize()+this.right.getSize()+1;
 			}
-		}
-
-		/**
-		 * public void setSize(int size)
-		 *
-		 * Sets the size of the node's subtree.
-		 * Complexity -O(1)
-		 *
-		 */
-		public void setSize(int size)
-		{
-			this.size=size;
+			else
+				this.size=0;
 		}
 	}
 }
