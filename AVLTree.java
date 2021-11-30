@@ -1391,9 +1391,15 @@ public class AVLTree {
 	 *
 	 */
 	private void setSubtree(IAVLNode nodeToRoot) {
-		this.root=nodeToRoot;
-		nodeToRoot.setParent(null);
-		this.size=nodeToRoot.getSize();
+		if(nodeToRoot.isRealNode()) {
+			this.root = nodeToRoot;
+			nodeToRoot.setParent(null);
+			this.size = nodeToRoot.getSize();
+		}
+		else{
+			this.root=null;
+			this.size=0;
+		}
 	}
 
 	/**
