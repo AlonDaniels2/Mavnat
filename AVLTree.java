@@ -405,16 +405,19 @@ public class AVLTree {
 			//both trees are empty
 			if(T1==null && T2==null) {
 				this.root = x;
+				// |-1-(-1)|+1=1
 				return 1;
 			}
 
 			//the tree is empty and t doesn't
 			if(T1==null){
 				this.root=T2;
-				result=T2.getHeight()+1;
+				// |t.rank-(-1)|+1=T2.getHeight()+2
+				result=T2.getHeight()+2;
 			}
 			else{// else- t is empty and the tree doesn't
-				result=T1.getHeight()+1;
+				// |this.rank-(-1)|+1=T1.getHeight()+2
+				result=T1.getHeight()+2;
 			}
 
 			// insert x to the merged tree
