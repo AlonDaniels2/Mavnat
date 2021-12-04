@@ -1,14 +1,62 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import javax.swing.*;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Tester {
     public static void main(String[] args) {
+        Q2();
+        checkminMax();
+        System.out.println("done");
         checkProblem5();
+        System.out.println("done");
         checkProblem4();
+        System.out.println("done");
         checkProblem3();
+        System.out.println("done");
         checkProblem2();
+        System.out.println("done");
         checkProblem();
+        System.out.println("done");
+        check();
+        System.out.println("done");
+        check2();
+        System.out.println("done");
+    }
+    public static void check2(){
+        int size=10;
+
+        AVLTree treeRandom=new AVLTree();
+        AVLTree treeMax=new AVLTree();
+
+        int[] keysArr= IntStream.range(1,size+1).toArray();
+        List keys=new ArrayList();
+        keys=Arrays.asList(keysArr);
+        shuffle(keysArr);
+
+        for(int j=1;j<=size;j++){
+            treeMax.insert(j,"num "+j);
+            treeMax.print();
+        }
+
+        treeMax.print();
+
+        System.out.println("max num: "+treeMax.max());
+        System.out.println("min num: "+treeMax.min());
+
+        Random rand = new Random(); //instance of random class
+        int randToSplit=4;
+        System.out.println("split of Random: "+randToSplit);
+        AVLTree[] splitRandom=treeMax.split(randToSplit);
+
+        System.out.println("max num t1: "+splitRandom[0].max());
+        System.out.println("min num t1: "+splitRandom[0].min());
+        System.out.println("size t1: "+splitRandom[0].size());
+        System.out.println("max num t2: "+splitRandom[1].max());
+        System.out.println("min num t2: "+splitRandom[1].min());
+        System.out.println("size t2: "+splitRandom[1].size());
+
+    }
+    public static void check(){
         AVLTree tree=new AVLTree();
 
         for (int i=1;i<=11;i++){
@@ -24,9 +72,7 @@ public class Tester {
         System.out.println(Arrays.toString(splitRes[0].keysToArray()));
         splitRes[1].print();
         System.out.println(Arrays.toString(splitRes[1].keysToArray()));
-
     }
-
     public static void checkInsertRandom(int n, int maxValue) {
 
         //Case 1
@@ -329,5 +375,122 @@ public class Tester {
         tree1.join(root.getRoot(),tree2);
         tree1.print();
 
+    }
+    public static void checkminMax(){
+        for(int i=1;i<=1;i++){
+            int size=(int)(1000*(Math.pow(2, i)));
+            System.out.println("================== for i= "+i+ " Tree's Size: "+size+" ==================");
+
+            AVLTree treeRandom=new AVLTree();
+            AVLTree treeMax=new AVLTree();
+
+            int[] keysArr= IntStream.range(1,size+1).toArray();
+            List keys=new ArrayList();
+            keys=Arrays.asList(keysArr);
+            shuffle(keysArr);
+
+            //random
+            //Collections.shuffle(keys);
+            //if(i==1)
+            //System.out.println("random array: "+Arrays.toString(keysArr));
+            //System.out.println("first element: "+keysArr[0]);
+
+            for(int j=0;j<size;j++){
+                treeRandom.insert(keysArr[j],"num "+keysArr[j]);
+                treeMax.insert(keysArr[j],"num "+keysArr[j]);
+            }
+
+            //treeMax.print();
+
+            System.out.println("max num: "+treeMax.max());
+            System.out.println("min num: "+treeMax.min());
+
+            Random rand = new Random(); //instance of random class
+            int randToSplit=rand.nextInt(size);
+
+            System.out.println("split of Random: "+randToSplit);
+            AVLTree[] splitRandom=treeRandom.split(randToSplit);
+
+            System.out.println("max num t1: "+splitRandom[0].max());
+            System.out.println("min num t1: "+splitRandom[0].min());
+            System.out.println("size t1: "+splitRandom[0].size());
+            System.out.println("max num t2: "+splitRandom[1].max());
+            System.out.println("min num t2: "+splitRandom[1].min());
+            System.out.println("size t2: "+splitRandom[1].size());
+
+
+
+            AVLTree.IAVLNode ptr=treeMax.getRoot().getLeft();
+            while(ptr.getRight().isRealNode()){
+                ptr=ptr.getRight();
+            }
+            int maxToSplit=ptr.getKey();
+
+            System.out.println("split of Max: "+maxToSplit);
+            AVLTree[] splitMax=treeMax.split(maxToSplit);
+            System.out.println("max num t1: "+splitMax[0].max());
+            System.out.println("min num t1: "+splitMax[0].min());
+            System.out.println("size t1: "+splitMax[0].size());
+            System.out.println("max num t2: "+splitMax[1].max());
+            System.out.println("min num t2: "+splitMax[1].min());
+            System.out.println("size t2: "+splitMax[1].size());
+
+            splitMax[1].join(ptr,splitMax[0]);
+            System.out.println("max num t2: "+splitMax[1].max());
+            System.out.println("min num t2: "+splitMax[1].min());
+            System.out.println("size t2: "+splitMax[1].size());
+
+
+
+        }
+    }
+    public static void shuffle(int[] array) { // mix-up the array
+        Random rand = new Random();
+        for (int i = array.length - 1; i > 0; --i) {
+            int j = rand.nextInt(i + 1);
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    public static void Q2(){
+        for(int i=1;i<=10;i++){
+            int size=(int)(1000*(Math.pow(2, i)));
+            System.out.println("================== for i= "+i+ " Tree's Size: "+size+" ==================");
+
+            AVLTree treeRandom=new AVLTree();
+            AVLTree treeMax=new AVLTree();
+
+            int[] keysArr= IntStream.range(1,size+1).toArray();
+
+            shuffle(keysArr);
+
+            for(int j=0;j<size;j++){
+                treeRandom.insert(keysArr[j],"num "+keysArr[j]);
+                treeMax.insert(keysArr[j],"num "+keysArr[j]);
+            }
+
+            Random rand = new Random(); //instance of random class
+            int randToSplit=rand.nextInt(size);
+
+            System.out.println("split of Random: "+randToSplit);
+            AVLTree[] splitRandom=treeRandom.splitQ2(randToSplit);
+            System.out.println("is good split? "+ (splitRandom[0].size()+splitRandom[1].size()+1==size));
+
+
+            AVLTree.IAVLNode ptr=treeMax.getRoot().getLeft();
+            while(ptr.getRight().isRealNode()){
+                ptr=ptr.getRight();
+            }
+            int maxToSplit=ptr.getKey();
+
+            System.out.println("split of Max: "+maxToSplit);
+            AVLTree[] splitMax=treeMax.splitQ2(maxToSplit);
+            System.out.println("is good split? "+ (splitMax[0].size()+splitMax[1].size()+1==size));
+            splitMax[0].join(ptr,splitMax[1]);
+            System.out.println("is good join? "+ (splitMax[0].size()==size));
+
+        }
     }
 }

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,18 +23,21 @@ public class AVLTree {
 
 	private IAVLNode root;
 	private int size = 0;
-
+	private IAVLNode min;
+	private IAVLNode max;
 
 	/**
 	 * public AVLTree()
 	 *
 	 * Constructor of empty AVL tree
-	 *
 	 * Complexity - O(1)
+	 *
 	 */
 	public AVLTree() {
 		this.root = null;
 		this.size=0;
+		this.min=null;
+		this.max=null;
 	}
 
 	/**
@@ -94,6 +98,10 @@ public class AVLTree {
 		if(this.empty()) {
 			this.root = new AVLNode(k, i, true);
 			this.size++;
+
+			// update min,max=root
+			this.min=this.root;
+			this.max=this.root;
 			return 0;
 		}
 
@@ -106,6 +114,9 @@ public class AVLTree {
 		IAVLNode ptr = this.root;
 
 		while(ptr.isRealNode()) {
+			// update size while down
+			ptr.setSize(ptr.getSize()+1);
+
 			int key = ptr.getKey();
 			if(k < key) {
 				ptr = ptr.getLeft();
@@ -117,6 +128,13 @@ public class AVLTree {
 
 		// Insert new node
 		IAVLNode toInsert = new AVLNode(k, i, true);
+
+		// update min or max if needed
+		if(k<this.min.getKey())
+			this.min=toInsert;
+		if(k>this.max.getKey())
+			this.max=toInsert;
+
 		IAVLNode parent = ptr.getParent();
 		boolean isLeftChild = k < parent.getKey();
 
@@ -130,7 +148,6 @@ public class AVLTree {
 		}
 
 		this.size++;
-
 		return rebalanceAfterInsertion(parent,k);
 	}
 
@@ -182,11 +199,27 @@ public class AVLTree {
 	 * Returns the info of the item with the smallest key in the tree,
 	 * or null if the tree is empty.
 	 *
-	 * Complexity - O(log n)
+		 * Complexity - O(1)
 	 *
 	 */
 	public String min()
 	{
+		if(this.empty()) {
+			return null;
+		}
+
+		return min.getValue();
+	}
+
+	/**
+	 * public String searchMin()
+	 *
+	 * Returns the node with the smallest key, null if tree is empty.
+	 *
+	 * Complexity - O(log n)
+	 *
+	 */
+	private IAVLNode searchMin(){
 		if(this.empty()) {
 			return null;
 		}
@@ -196,7 +229,28 @@ public class AVLTree {
 		while (ptr.getLeft().isRealNode()) {
 			ptr = ptr.getLeft();
 		}
-		return ptr.getValue();
+		return ptr;
+	}
+
+	/**
+	 * public String searchMax()
+	 *
+	 * Returns the node with the biggest key, null if tree is empty.
+	 *
+	 * Complexity - O(log n)
+	 *
+	 */
+	private IAVLNode searchMax(){
+		if(this.empty()) {
+			return null;
+		}
+
+		IAVLNode ptr = this.root;
+
+		while (ptr.getRight().isRealNode()) {
+			ptr = ptr.getRight();
+		}
+		return ptr;
 	}
 
 	/**
@@ -205,7 +259,7 @@ public class AVLTree {
 	 * Returns the info of the item with the largest key in the tree,
 	 * or null if the tree is empty.
 	 *
-	 * Complexity - O(log n)
+	 * Complexity - O(1)
 	 *
 	 */
 	public String max()
@@ -213,13 +267,7 @@ public class AVLTree {
 		if(this.empty()) {
 			return null;
 		}
-
-		IAVLNode ptr = this.root;
-
-		while(ptr.getRight().isRealNode()) {
-			ptr = ptr.getRight();
-		}
-		return ptr.getValue();
+		return max.getValue();
 	}
 
 	/**
@@ -298,16 +346,22 @@ public class AVLTree {
 		// bigger then x
 		AVLTree T2=new AVLTree();
 
+		IAVLNode splitNode=findNode(x);
+
 		// split the node
-		if(findNode(x)==this.root)
+		if(splitNode==this.root)
 		{
 			T1.setSubtree(this.root.getLeft());
 			T2.setSubtree(this.root.getRight());
+
+			T1.max=T1.searchMax();
+			T1.min=T1.searchMin();
+			T2.max=T2.searchMax();
+			T2.min=T2.searchMin();
+
 			AVLTree[] resultArr={T1,T2};
 			return resultArr;
 		}
-
-		IAVLNode splitNode=findNode(x);
 
 		// set the sub-tree of splitNode
 		if(splitNode.getLeft().isRealNode()){
@@ -328,6 +382,7 @@ public class AVLTree {
 
 			// ptr is a left son
 			if(isLeftSon){
+				// update next node to join
 				if(nodeToJoin.getParent()!=null) {
 					isLeftSon = true;
 					if (nodeToJoin.getParent().getRight() == nodeToJoin)
@@ -370,6 +425,14 @@ public class AVLTree {
 				T1.join(tempNode,joinTree);
 			}
 		}
+
+		// Set right IAVLNodes to min max
+		T1.max=T1.searchMax();
+		T1.min=T1.searchMin();
+		T2.max=T2.searchMax();
+		T2.min=T2.searchMin();
+
+
 		AVLTree[] resultArr={T1,T2};
 		return resultArr;
 	}
@@ -393,10 +456,10 @@ public class AVLTree {
 
 		// x is a single node
 		x.setHeight(0);
-		x.updateSize();
+		x.setSize(1);
 
 		this.size=this.size+t.size+1;
-
+		//System.out.println("this.size= "+this.size);
 		int result=0;
 
 		// at least one tree is empty
@@ -405,6 +468,11 @@ public class AVLTree {
 			//both trees are empty
 			if(T1==null && T2==null) {
 				this.root = x;
+				x.setParent(null);
+				//update min/max to be x
+				this.max=this.root;
+				this.min=this.root;
+
 				// |-1-(-1)|+1=1
 				return 1;
 			}
@@ -414,15 +482,39 @@ public class AVLTree {
 				this.root=T2;
 				// |t.rank-(-1)|+1=T2.getHeight()+2
 				result=T2.getHeight()+2;
+
+				// update min/max to be t's min/max
+				this.min=t.min;
+				this.max=t.max;
 			}
 			else{// else- t is empty and the tree doesn't
 				// |this.rank-(-1)|+1=T1.getHeight()+2
 				result=T1.getHeight()+2;
 			}
 
+			if(this.min!=null && this.max!=null) {
+				// update x to be min/max if needed
+				if (x.getKey() > this.max.getKey())
+					this.max = x;
+				if (x.getKey() < this.min.getKey())
+					this.min = x;
+			}
+
 			// insert x to the merged tree
 			insertionForJoin(x);
 			return result;
+		}
+
+		// if we are in split and use join then it could be 2 un-empty trees with
+		// null min-max,we dont care about updating min/max- just at the end of split
+		if(t.min!=null && t.max!=null && this.min!=null && this.max!=null) {
+			// both trees are not empty so x isnt a min/max
+			if (t.min.getKey() < this.min.getKey()) {
+				this.min = t.min;
+			}
+			if (t.max.getKey() > this.max.getKey()) {
+				this.max = t.max;
+			}
 		}
 
 		// make T2  higher then T1
@@ -479,6 +571,8 @@ public class AVLTree {
 			else{
 				// down till ptr.getHeight()<=h)
 				while (ptr.getHeight() > h1) {
+					//update size of every node we pass through
+					ptr.setSize(ptr.getSize()+1+T1.getSize());
 					ptr = ptr.getLeft();
 				}
 
@@ -515,6 +609,8 @@ public class AVLTree {
 			else {
 				// down till ptr.getHeight()<=h)
 				while (ptr.getHeight() > h1) {
+					//update size of every node we pass through
+					ptr.setSize(ptr.getSize()+1+T1.getSize());
 					ptr = ptr.getRight();
 				}
 
@@ -844,8 +940,6 @@ public class AVLTree {
 	private int rebalanceAfterInsertion(IAVLNode parent, int k) {
 		int promotions = 0;
 
-		parent.updateSize();
-
 		// Update parent height
 		if(parent.getHeight() != 1) {
 			promotions++;
@@ -860,17 +954,14 @@ public class AVLTree {
 		IAVLNode ptr = parent;
 		int balance = getBalanceFactor(ptr);
 
-
-
 		while(-1 <= balance && balance <= 1) {
 			ptr = ptr.getParent();
 
 			if(ptr == null) {
-
 				break;
 			}
 
-			ptr.updateSize();
+			//ptr.updateSize();
 
 			int newHeight = 1 + Math.max(ptr.getLeft().getHeight(), ptr.getRight().getHeight());
 			if(ptr.getHeight() != newHeight) {
@@ -935,6 +1026,10 @@ public class AVLTree {
 
 		while(ptr.isRealNode()) {
 			int key = ptr.getKey();
+
+			// update size while down
+			ptr.setSize(ptr.getSize()+1);
+
 			if(toInsert.getKey() < key) {
 				ptr = ptr.getLeft();
 			}
@@ -971,7 +1066,6 @@ public class AVLTree {
 
 		// if node is'nt the root
 		if(node!=null) {
-
 			int right=node.getHeight()-node.getRight().getHeight();
 			int left=node.getHeight()-node.getRight().getHeight();
 
@@ -979,7 +1073,6 @@ public class AVLTree {
 
 				// promote- and go up
 				node.setHeight(1+node.getHeight());
-				node.updateSize();
 
 				rebalanceAfterJoin(node.getParent());
 			}
@@ -1448,7 +1541,6 @@ public class AVLTree {
 		}
 	}
 
-
 	/**
 	 * ==================================================FOR US-TO DELETE================================================================
 	 *
@@ -1560,6 +1652,124 @@ public class AVLTree {
 		}
 	}
 
+	public AVLTree[] splitQ2(int x)
+	{
+		// smaller then x
+		AVLTree T1=new AVLTree();
+
+		// bigger then x
+		AVLTree T2=new AVLTree();
+
+		IAVLNode splitNode=findNode(x);
+		List<Integer> costArr=new ArrayList<>();
+
+		// split the node
+		if(splitNode==this.root)
+		{
+			T1.setSubtree(this.root.getLeft());
+			T2.setSubtree(this.root.getRight());
+
+			T1.max=T1.searchMax();
+			T1.min=T1.searchMin();
+			T2.max=T2.searchMax();
+			T2.min=T2.searchMin();
+
+
+			System.out.println("All costs: "+ Arrays.toString(costArr.toArray()));
+			System.out.println("max cost: "+ 0);
+			System.out.println("average cost: "+ 0);
+
+			AVLTree[] resultArr={T1,T2};
+			return resultArr;
+		}
+
+		// set the sub-tree of splitNode
+		if(splitNode.getLeft().isRealNode()){
+			T1.setSubtree(splitNode.getLeft());
+		}
+		if(splitNode.getRight().isRealNode()){
+			T2.setSubtree(splitNode.getRight());
+		}
+
+		IAVLNode nodeToJoin=splitNode.getParent();
+
+		boolean isLeftSon=true;
+		if(nodeToJoin.getRight()==splitNode)
+			isLeftSon=false;
+
+		while(nodeToJoin!=null){
+			AVLTree joinTree=new AVLTree();
+
+			// ptr is a left son
+			if(isLeftSon){
+				// update next node to join
+				if(nodeToJoin.getParent()!=null) {
+					isLeftSon = true;
+					if (nodeToJoin.getParent().getRight() == nodeToJoin)
+						isLeftSon = false;
+				}
+
+				IAVLNode tempNode = nodeToJoin;
+				nodeToJoin = nodeToJoin.getParent();
+
+				joinTree.setSubtree(tempNode.getRight());
+
+				tempNode.setParent(null);
+				tempNode.setRight(new AVLNode(-1, null, false));
+				tempNode.setLeft(new AVLNode(-1, null, false));
+				tempNode.setHeight(0);
+				tempNode.updateSize();
+
+				costArr.add(T2.join(tempNode,joinTree));
+			}
+			// ptr is a right son
+			else
+			{
+				if(nodeToJoin.getParent()!=null) {
+					isLeftSon = true;
+					if (nodeToJoin.getParent().getRight() == nodeToJoin)
+						isLeftSon = false;
+				}
+
+				IAVLNode tempNode = nodeToJoin;
+				nodeToJoin = nodeToJoin.getParent();
+
+				joinTree.setSubtree(tempNode.getLeft());
+
+				tempNode.setParent(null);
+				tempNode.setRight(new AVLNode(-1, null, false));
+				tempNode.setLeft(new AVLNode(-1, null, false));
+				tempNode.setHeight(0);
+				tempNode.updateSize();
+
+				costArr.add(T1.join(tempNode,joinTree));
+			}
+		}
+
+		// Set right IAVLNodes to min max
+		T1.max=T1.searchMax();
+		T1.min=T1.searchMin();
+		T2.max=T2.searchMax();
+		T2.min=T2.searchMin();
+
+		int max=0;
+		int count=0;
+		for(int i=0;i<costArr.size();i++){
+			if(costArr.get(i)>max)
+				max=costArr.get(i);
+			count+=costArr.get(i);
+		}
+
+		System.out.println("All costs: "+ Arrays.toString(costArr.toArray()));
+		System.out.println("max cost: "+ max);
+		double average=count/(float)costArr.size();
+		System.out.println("average cost: "+ average);
+
+		AVLTree[] resultArr={T1,T2};
+		return resultArr;
+	}
+
+	//================================================================================================================
 
 	/**
 	 * public interface IAVLNode
@@ -1578,7 +1788,8 @@ public class AVLTree {
 		public void setHeight(int height); // Sets the height of the node.
 		public int getHeight(); // Returns the height of the node (-1 for virtual nodes).
 		public int getSize();// Returns the size of the node's subtree.
-		public void updateSize();// Sets the size of the node's subtree.
+		public void updateSize();// Updates the size of the node's subtree.
+		public void setSize(int size);// Sets the size of the node's subtree.
 	}
 
 	/**
@@ -1763,5 +1974,16 @@ public class AVLTree {
 			else
 				this.size=0;
 		}
+
+		/**
+		 * public void updateSize()
+		 * Set the size according to given size
+		 * Complexity --O(1)
+		 */
+		public void setSize(int size)
+		{
+			this.size=size;
+		}
+
 	}
 }
