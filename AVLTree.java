@@ -64,7 +64,7 @@ public class AVLTree {
 	{
 		// Standard binary search
 		IAVLNode ptr = this.root;
-		while(ptr!=null) {
+		while(ptr != null) {
 			int key = ptr.getKey();
 			if(key == k) {
 				return ptr.getValue();
@@ -130,9 +130,9 @@ public class AVLTree {
 		IAVLNode toInsert = new AVLNode(k, i, true);
 
 		// update min or max if needed
-		if(k<this.min.getKey())
+		if(k < this.min.getKey())
 			this.min=toInsert;
-		if(k>this.max.getKey())
+		if(k > this.max.getKey())
 			this.max=toInsert;
 
 		IAVLNode parent = ptr.getParent();
@@ -189,6 +189,12 @@ public class AVLTree {
 				parentOfDeleted = findNodeSuccessor(toDelete).getParent();
 				removeInternalNode(toDelete);
 				break;
+		}
+		if(this.max.getKey() == k) {
+			this.max = searchMax();
+		}
+		if(this.min.getKey() == k) {
+			this.min = searchMin();
 		}
 		return rebalanceAfterDeletion(parentOfDeleted);
 	}
@@ -276,7 +282,7 @@ public class AVLTree {
 	 * Returns a sorted array which contains all keys in the tree,
 	 * or an empty array if the tree is empty.
 	 *
-	 * Complexity -
+	 * Complexity - O(n)
 	 */
 
 	public int[] keysToArray() {
@@ -297,7 +303,7 @@ public class AVLTree {
 	 * sorted by their respective keys,
 	 * or an empty array if the tree is empty.
 	 *
-	 * Complexity -
+	 * Complexity - O(n)
 	 *
 	 */
 	public String[] infoToArray()
@@ -656,7 +662,7 @@ public class AVLTree {
 	 *
 	 * Recursive helper function to insert the keys to the array
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 * */
 	private int keysToArrayRec(IAVLNode node, int i, int[] arr) {
@@ -673,7 +679,7 @@ public class AVLTree {
 	 *
 	 * Recursive helper function to insert the info to the array
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 * */
 	private int infoToArrayRec(IAVLNode node, int i, String[] arr) {
@@ -1183,7 +1189,7 @@ public class AVLTree {
 	 *
 	 * @pre: nodeA.isRealNode() == true  == nodeB.isRealNode()
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 */
 	private void swapNodes(IAVLNode nodeA, IAVLNode nodeB) {
@@ -1268,7 +1274,7 @@ public class AVLTree {
 	 *
 	 * @pre: child.getParent() == parent
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 */
 	private void swapParentAndChild(IAVLNode parent, IAVLNode child) {
@@ -1367,7 +1373,7 @@ public class AVLTree {
 	 *
 	 * Returns node's successor
 	 *
-	 * Complexity -
+	 * Complexity - O(logn)
 	 *
 	 */
 	private IAVLNode findNodeSuccessor(IAVLNode node){
@@ -1398,7 +1404,7 @@ public class AVLTree {
 	 *
 	 * @pre : node is a leaf node && not the root
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 */
 	private void removeLeafNode(IAVLNode node) {
@@ -1422,7 +1428,7 @@ public class AVLTree {
 	 *
 	 * @pre: node is an unary node
 	 *
-	 * Complexity -
+	 * Complexity - O(1)
 	 *
 	 */
 	private void removeUnaryNode(IAVLNode node) {
@@ -1459,7 +1465,7 @@ public class AVLTree {
 	 * Internal node has a right child so its successor is a leaf node or unary.
 	 * @pre: node is an internal node.
 	 *
-	 * Complexity -
+	 * Complexity - O(logn)
 	 *
 	 */
 	private void removeInternalNode(IAVLNode node) {
@@ -1498,9 +1504,9 @@ public class AVLTree {
 	/**
 	 * private int removeRootNode()
 	 *
+	 * Removes the root node and returns number of re-balancing operations done.
 	 *
-	 *
-	 * Complexity -
+	 * Complexity - O(logn)
 	 *
 	 */
 	private int removeRootNode() {
@@ -1508,6 +1514,8 @@ public class AVLTree {
 		if(this.size == 1) { // If the tree only has one node, remove it and set the tree as empty
 			this.root = null;
 			this.size = 0;
+			this.min = null;
+			this.max = null;
 			return 0;
 		}
 
@@ -1515,12 +1523,15 @@ public class AVLTree {
 			root.getRight().setParent(null);
 			this.root = root.getRight();
 			this.size = 1;
+			this.min = this.root;
+
 			return 0;
 		}
 		else if(!root.getRight().isRealNode()) { // If the tree only has a left child
 			root.getLeft().setParent(null);
 			this.root = root.getLeft();
 			this.size = 1;
+			this.max = this.root;
 			return 0;
 		}
 		else { // root has both children
@@ -1536,6 +1547,8 @@ public class AVLTree {
 					break;
 
 			}
+			this.min = searchMin();
+			this.max = searchMax();
 			this.size--;
 			return rebalanceAfterDeletion(deletedParent);
 		}
@@ -1984,6 +1997,5 @@ public class AVLTree {
 		{
 			this.size=size;
 		}
-
 	}
 }
