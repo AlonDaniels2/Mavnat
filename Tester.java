@@ -4,7 +4,7 @@ import java.util.stream.IntStream;
 
 public class Tester {
     public static void main(String[] args) {
-        Q2();
+        /*Q2();
         checkminMax();
         System.out.println("done");
         checkProblem5();
@@ -18,9 +18,18 @@ public class Tester {
         checkProblem();
         System.out.println("done");
         check();
-        System.out.println("done");
-        check2();
-        System.out.println("done");
+        System.out.println("done");*/
+        AVLTree tree=new AVLTree();
+        tree.insert(8,"8");
+        tree.insert(6,"6");
+        tree.insert(9,"9");
+        tree.insert(5,"5");
+        tree.insert(10,"10");
+        tree.insert(7,"7");
+        tree.delete(6);
+
+        //check2();
+        //System.out.println("done");
     }
     public static void check2(){
         int size=10;
@@ -51,6 +60,18 @@ public class Tester {
         System.out.println("max num t1: "+splitRandom[0].max());
         System.out.println("min num t1: "+splitRandom[0].min());
         System.out.println("size t1: "+splitRandom[0].size());
+        splitRandom[0].delete(randToSplit-1);
+        System.out.println("max num t1: "+splitRandom[0].max());
+        System.out.println("min num t1: "+splitRandom[0].min());
+        System.out.println("size t1: "+splitRandom[0].size());
+
+
+        splitRandom[1].print();
+        System.out.println("max num t2: "+splitRandom[1].max());
+        System.out.println("min num t2: "+splitRandom[1].min());
+        System.out.println("size t2: "+splitRandom[1].size());
+        System.out.println("delete this"+(randToSplit+2));
+        splitRandom[1].delete(randToSplit+2);
         System.out.println("max num t2: "+splitRandom[1].max());
         System.out.println("min num t2: "+splitRandom[1].min());
         System.out.println("size t2: "+splitRandom[1].size());

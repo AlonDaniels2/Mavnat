@@ -460,9 +460,13 @@ public class AVLTree {
 		IAVLNode T1=this.getRoot();
 		IAVLNode T2=t.getRoot();
 
-		// x is a single node
+		// make sure x is a single node
 		x.setHeight(0);
 		x.setSize(1);
+		if(x.getRight()==null)
+			x.setRight(new AVLNode(-1, null, false));
+		if(x.getLeft()==null)
+			x.setLeft(new AVLNode(-1, null, false));
 
 		this.size=this.size+t.size+1;
 		//System.out.println("this.size= "+this.size);
