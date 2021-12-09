@@ -382,7 +382,6 @@ public class AVLTree {
 
 		while(nodeToJoin!=null){
 			AVLTree joinTree=new AVLTree();
-
 			// ptr is a left son
 			if(isLeftSon){
 				// update next node to join
@@ -475,13 +474,11 @@ public class AVLTree {
 		// make sure x is a single node
 		x.setParent(null);
 		if(x.getRight()==null) {
-			System.out.println("here??");
 			IAVLNode rightSon=new AVLNode(-1, null, false);
 			x.setRight(rightSon);
 			rightSon.setParent(x);
 		}
 		if(x.getLeft()==null) {
-			System.out.println("here??");
 			IAVLNode leftSon=new AVLNode(-1, null, false);
 			x.setLeft(leftSon);
 			leftSon.setParent(x);
@@ -490,7 +487,6 @@ public class AVLTree {
 		x.setSize(1);
 
 		this.size=this.size+t.size+1;
-		//System.out.println("this.size= "+this.size);
 		int result=0;
 
 		// at least one tree is empty
@@ -661,7 +657,7 @@ public class AVLTree {
 		x.setHeight(1 + Math.max(x.getLeft().getHeight(), x.getRight().getHeight()));
 		x.updateSize();
 
-		rebalanceAfterJoin(ptr.getParent());
+		rebalanceAfterJoin(x.getParent());
 
 		return result;
 
@@ -1098,13 +1094,11 @@ public class AVLTree {
 		// if node is'nt the root
 		if(node!=null) {
 			int right=node.getHeight()-node.getRight().getHeight();
-			int left=node.getHeight()-node.getRight().getHeight();
-
+			int left=node.getHeight()-node.getLeft().getHeight();
 			if ((right==1 && left==0) || (right==0 && left==1)){
 
 				// promote- and go up
-				node.setHeight(1+node.getHeight());
-
+				node.setHeight(1 + node.getHeight());
 				rebalanceAfterJoin(node.getParent());
 			}
 			else if(right==2 && left==0){
@@ -1112,16 +1106,20 @@ public class AVLTree {
 				IAVLNode a=x.getLeft();
 				IAVLNode b=x.getRight();
 
+				// rotate and done
 				if(x.getHeight()-a.getHeight()==1 && x.getHeight()-b.getHeight()==2){
 					rotateRight(node);
 				}
 
+				// rotate and done
 				if(x.getHeight()-a.getHeight()==2 && x.getHeight()-b.getHeight()==1){
 					rotateDouble(node,LEFT,RIGHT);
 				}
 
+				// rotate and go up
 				if(x.getHeight()-a.getHeight()==1 && x.getHeight()-b.getHeight()==1){
 					rotateRight(node);
+					rebalanceAfterJoin(node.getParent().getParent());
 				}
 			}
 			else if(right==0 && left==2){
@@ -1129,20 +1127,23 @@ public class AVLTree {
 				IAVLNode a=x.getLeft();
 				IAVLNode b=x.getRight();
 
+				// rotate and done
 				if(x.getHeight()-a.getHeight()==2 && x.getHeight()-b.getHeight()==1){
 					rotateLeft(node);
 				}
 
+				// rotate and done
 				if(x.getHeight()-a.getHeight()==1 && x.getHeight()-b.getHeight()==2){
 					rotateDouble(node,RIGHT,LEFT);
 				}
 
+				// rotate and go up
 				if(x.getHeight()-a.getHeight()==1 && x.getHeight()-b.getHeight()==1){
 					rotateLeft(node);
+					rebalanceAfterJoin(node.getParent().getParent());
 				}
 			}
 		}
-
 	}
 
 	/**
