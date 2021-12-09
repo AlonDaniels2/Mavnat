@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *
@@ -923,7 +920,7 @@ public class AVLTree {
 	 * Traverse up the tree updating the heights
 	 * Return number of promotions
 	 *
-	 * Complexity - O(1)
+	 * Complexity - O(log n)
 	 *
 	 **/
 	private int updateHeights(IAVLNode node) {
