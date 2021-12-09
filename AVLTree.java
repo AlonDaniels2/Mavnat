@@ -186,7 +186,7 @@ public class AVLTree {
 				removeUnaryNode(toDelete);
 				break;
 			case INTERNAL_NODE:
-				parentOfDeleted = findNodeSuccessor(toDelete).getParent();
+				parentOfDeleted = findNodeSuccessor(toDelete);
 				removeInternalNode(toDelete);
 				break;
 		}
@@ -1667,6 +1667,19 @@ public class AVLTree {
 
 			perpiece /= 2;
 		}
+	}
+	/**
+	 * ==================================================FOR US-TO DELETE================================================================
+	 *
+	 */
+	public static boolean checkParents(IAVLNode node) {
+		if(node.isRealNode()) {
+			if(node.getLeft().getParent() == node && node.getRight().getParent() == node) {
+				return checkParents(node.getLeft()) && checkParents(node.getRight());
+			}
+			return false;
+		}
+		return true;
 	}
 
 	public AVLTree[] splitQ2(int x)
